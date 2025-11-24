@@ -5,10 +5,12 @@ import { checkLimit, incrementLimit, MAX_DAILY_CONTACTS } from "@/lib/limit";
 
 type Contact = {
   id: string;
-  name: string;
+  nom: string;
+  prenom: string;
   email: string;
-  phone: string;
-  agencyId: string;
+  telephone: string;
+  poste: string;
+  agenceId: string;
 };
 
 export default async function ContactsPage() {
@@ -49,6 +51,7 @@ export default async function ContactsPage() {
                 <th scope="col" className="px-6 py-3">Nom</th>
                 <th scope="col" className="px-6 py-3">Email</th>
                 <th scope="col" className="px-6 py-3">Téléphone</th>
+                <th scope="col" className="px-6 py-3">Poste</th>
                 <th scope="col" className="px-6 py-3">Agence ID</th>
               </tr>
             </thead>
@@ -56,10 +59,11 @@ export default async function ContactsPage() {
               {displayedContacts.map((contact) => (
                 <tr key={contact.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="px-6 py-4">{contact.id}</td>
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{contact.name}</td>
+                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{contact.prenom} {contact.nom}</td>
                   <td className="px-6 py-4">{contact.email}</td>
-                  <td className="px-6 py-4">{contact.phone}</td>
-                  <td className="px-6 py-4">{contact.agencyId}</td>
+                  <td className="px-6 py-4">{contact.telephone}</td>
+                  <td className="px-6 py-4">{contact.poste}</td>
+                  <td className="px-6 py-4">{contact.agenceId}</td>
                 </tr>
               ))}
             </tbody>
