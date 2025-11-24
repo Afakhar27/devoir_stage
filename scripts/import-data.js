@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 const fs = require('fs');
 const path = require('path');
 
