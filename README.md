@@ -53,7 +53,7 @@ graph TD
 - `src/app` : Pages et routes (App Router).
 - `src/components` : Composants réutilisables (Navbar).
 - `src/lib` : Logique métier (données, gestion des limites).
-- `src/data` : Données mockées (JSON).
+- `src/data` : Données importées depuis les fichiers CSV fournis (JSON).
 
 ## Technologies
 
