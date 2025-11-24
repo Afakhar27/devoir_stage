@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import { getContacts } from "@/lib/data";
 import { auth } from "@clerk/nextjs/server";
-import { checkLimit, incrementLimit, MAX_DAILY_CONTACTS } from "@/lib/limit";
+import { MAX_DAILY_CONTACTS } from "@/lib/limit";
 
 type Contact = {
   id: string;
@@ -24,24 +24,17 @@ export default async function ContactsPage() {
   if (!userId) return null;
 
   const allContacts = await getContacts();
-  const { allowed, remaining } = checkLimit(userId);
+  // const { allowed, remaining } = checkLimit(userId); // Removed strict limit check for display
 
-  let displayedContacts: Contact[] = [];
-  let showUpgrade = false;
+  const MAX_DISPLAY = MAX_DAILY_CONTACTS;
+  const displayedContacts: Contact[] = allContacts.slice(0, MAX_DISPLAY);
+  
+  // Show upgrade banner if there are more contacts than displayed
+  const showUpgrade = allContacts.length > MAX_DISPLAY;
 
-  if (allowed) {
-    const countToShow = Math.min(remaining, allContacts.length);
-    displayedContacts = allContacts.slice(0, countToShow);
-    
-    // Note: In development (Strict Mode), this might run twice.
-    incrementLimit(userId, countToShow);
-
-    if (allContacts.length > countToShow || remaining < allContacts.length) {
-        showUpgrade = true;
-    }
-  } else {
-    showUpgrade = true;
-  }
+  // Optional: You could still track usage here if needed, but for display purposes
+  // we just enforce the hard limit of 50 items visible.
+  // incrementLimit(userId, displayedContacts.length); 
 
   return (
     <div>
