@@ -1,0 +1,7 @@
+[
+  { "id": "1", "name": "Agence Paris", "city": "Paris" },
+  { "id": "2", "name": "Agence Lyon", "city": "Lyon" },
+  { "id": "3", "name": "Agence Marseille", "city": "Marseille" },
+  { "id": "4", "name": "Agence Bordeaux", "city": "Bordeaux" },
+  { "id": "5", "name": "Agence Lille", "city": "Lille" }
+]
