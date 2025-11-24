@@ -26,23 +26,9 @@ try {
 
     console.log(`Found ${agenciesRaw.length} agencies and ${contactsRaw.length} contacts.`);
 
-    // Map to French keys as used in the application
-    const agencies = agenciesRaw.map(a => ({
-        id: a.id,
-        nom: a.name,
-        ville: a.name, // Using name as city/ville
-        region: a.state
-    }));
-
-    const contacts = contactsRaw.map(c => ({
-        id: c.id,
-        nom: c.last_name,
-        prenom: c.first_name,
-        email: c.email,
-        telephone: c.phone,
-        poste: c.title,
-        agenceId: c.agency_id
-    }));
+    // Keep all fields as requested by the user
+    const agencies = agenciesRaw;
+    const contacts = contactsRaw;
 
     console.log('Writing JSON files...');
     fs.writeFileSync(agenciesJsonPath, JSON.stringify(agencies, null, 2));
