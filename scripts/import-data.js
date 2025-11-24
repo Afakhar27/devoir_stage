@@ -2,33 +2,12 @@
 // @ts-nocheck
 const fs = require('fs');
 const path = require('path');
+const { parse } = require('csv-parse/sync');
 
 const agenciesCsvPath = path.join(__dirname, '../agencies_agency_rows.csv');
 const contactsCsvPath = path.join(__dirname, '../contacts_contact_rows.csv');
 const agenciesJsonPath = path.join(__dirname, '../src/data/agences.json');
 const contactsJsonPath = path.join(__dirname, '../src/data/contacts.json');
-
-function parseCsv(content) {
-    const lines = content.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const result = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        // Handle quotes if necessary, but for now simple split
-        // A better regex for CSV splitting: /,(?=(?:(?:[^"]*"){2})*[^"]*$)/
-        const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim().replace(/^"|"$/g, ''));
-        
-        const obj = {};
-        headers.forEach((header, index) => {
-            obj[header] = values[index] || '';
-        });
-        result.push(obj);
-    }
-    return result;
-}
 
 try {
     console.log('Reading CSV files...');
@@ -36,8 +15,14 @@ try {
     const contactsContent = fs.readFileSync(contactsCsvPath, 'utf8');
 
     console.log('Parsing CSV data...');
-    const agenciesRaw = parseCsv(agenciesContent);
-    const contactsRaw = parseCsv(contactsContent);
+    const agenciesRaw = parse(agenciesContent, {
+        columns: true,
+        skip_empty_lines: true
+    });
+    const contactsRaw = parse(contactsContent, {
+        columns: true,
+        skip_empty_lines: true
+    });
 
     console.log(`Found ${agenciesRaw.length} agencies and ${contactsRaw.length} contacts.`);
 
