@@ -5,9 +5,9 @@ Application de tableau de bord avec authentification et gestion de limite de vue
 ## Fonctionnalités
 
 - **Authentification** : Sécurisée via Clerk.
-- **Agences** : Visualisation de la liste des agences.
-- **Contacts** : Visualisation de la liste des contacts avec une limite quotidienne de 50 vues.
-- **Upgrade** : Message d'invitation à la mise à niveau lorsque la limite est atteinte.
+- **Agences** : Visualisation de la liste complète des agences.
+- **Contacts** : Visualisation des contacts (mode gratuit limité aux 50 premiers résultats).
+- **Design Moderne** : Interface professionnelle avec Tailwind CSS et Lucide Icons.
 
 ## Installation
 
@@ -41,11 +41,10 @@ graph TD
     D -->|Naviguer| E[Agences /agences]
     D -->|Naviguer| F[Contacts /contacts]
     E --> G[Afficher Liste Agences]
-    F --> H{Vérifier Limite Quotidienne}
-    H -->|Limite < 50| I[Afficher Contacts]
-    I --> J[Incrémenter Compteur]
-    H -->|Limite >= 50| K[Afficher Message Upgrade]
-    J -->|Si reste < Total| K
+    F --> H[Afficher 50 premiers contacts]
+    H --> I{Reste-t-il des contacts ?}
+    I -->|Oui| J[Afficher Bannière Premium]
+    I -->|Non| K[Fin de liste]
 ```
 
 ### Structure du Projet
@@ -59,5 +58,43 @@ graph TD
 
 - Next.js 16 (App Router)
 - Clerk (Auth)
-- Tailwind CSS
+- Tailwind CSS v4
+- Lucide React (Icons)
 - TypeScript
+
+## Déploiement
+
+### Option 1 : Vercel (Recommandé)
+
+Le moyen le plus simple de déployer cette application Next.js est d'utiliser la [Plateforme Vercel](https://vercel.com/new).
+
+1.  Poussez votre code sur un dépôt Git (GitHub, GitLab, Bitbucket).
+2.  Importez le projet dans Vercel.
+3.  Ajoutez les variables d'environnement suivantes dans les paramètres du projet Vercel :
+    - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+    - `CLERK_SECRET_KEY`
+    - `NEXT_PUBLIC_CLERK_SIGN_IN_URL`
+    - `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
+4.  Déployez.
+
+### Option 2 : Docker
+
+Vous pouvez conteneuriser l'application pour la déployer sur n'importe quelle plateforme supportant Docker (Azure App Service, AWS ECS, DigitalOcean, etc.).
+
+1.  Construire l'image Docker :
+    > **Note** : Les variables `NEXT_PUBLIC_` doivent être disponibles lors de la construction.
+    ```bash
+    docker build \
+      --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=votre_clé \
+      --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in \
+      --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up \
+      -t app-dashboard .
+    ```
+
+2.  Lancer le conteneur :
+    ```bash
+    docker run -p 3000:3000 \
+      -e CLERK_SECRET_KEY=votre_clé_secrète \
+      app-dashboard
+    ```
+

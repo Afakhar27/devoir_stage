@@ -1,75 +1,129 @@
 import Navbar from "@/components/Navbar";
+import Search from "@/components/Search";
+import Pagination from "@/components/Pagination";
 import { getAgences } from "@/lib/data";
+import { Building2, MapPin, Globe, Users } from "lucide-react";
 
-export default async function AgencesPage() {
-  const agences = await getAgences();
+type Agence = {
+  name: string;
+  state: string;
+  state_code: string;
+  type: string;
+  population: string;
+  website: string;
+};
+
+export default async function AgencesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    query?: string;
+    page?: string;
+  }>;
+}) {
+  const params = await searchParams;
+  const query = params?.query || '';
+  const currentPage = Number(params?.page) || 1;
+  const itemsPerPage = 15;
+
+  const allAgences: Agence[] = await getAgences();
+
+  // Filter agencies
+  const filteredAgences = allAgences.filter((agence) => {
+    const searchContent = `${agence.name} ${agence.state} ${agence.type}`.toLowerCase();
+    return searchContent.includes(query.toLowerCase());
+  });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredAgences.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedAgences = filteredAgences.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
       <Navbar />
-      <div className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-4">Agences</h1>
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">ID</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Name</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">State</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">State Code</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Type</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Population</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Website</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Total Schools</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Total Students</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Mailing Address</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Grade Span</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Locale</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">CSA/CBSA</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Domain Name</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Physical Address</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Phone</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Status</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Student/Teacher Ratio</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Supervisory Union</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">County</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Created At</th>
-                <th scope="col" className="px-6 py-3 whitespace-nowrap">Updated At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {agences.map((agence: any) => (
-                <tr key={agence.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.id}</td>
-                  <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{agence.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.state}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.state_code}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.type}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.population}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {agence.website && <a href={agence.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Link</a>}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.total_schools}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.total_students}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.mailing_address}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.grade_span}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.locale}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.csa_cbsa}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.domain_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.physical_address}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.phone}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.status}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.student_teacher_ratio}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.supervisory_union}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.county}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.created_at}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{agence.updated_at}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+              <Building2 className="text-blue-600" size={32} />
+              Agences
+            </h1>
+            <p className="mt-2 text-slate-600 dark:text-slate-400">
+              Liste complète des agences enregistrées ({filteredAgences.length})
+            </p>
+          </div>
+          <div className="w-full sm:w-72">
+            <Search placeholder="Rechercher une agence..." />
+          </div>
         </div>
-      </div>
+
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+              <thead className="bg-slate-50 dark:bg-slate-800/50 text-xs uppercase font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                <tr>
+                  <th className="px-6 py-4">Nom</th>
+                  <th className="px-6 py-4">État</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Population</th>
+                  <th className="px-6 py-4">Site Web</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                {paginatedAgences.map((agence, index) => (
+                  <tr key={index} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                      {agence.name}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={14} className="text-slate-400" />
+                        {agence.state} <span className="text-xs text-slate-400">({agence.state_code})</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                        {agence.type}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <Users size={14} className="text-slate-400" />
+                        {parseInt(agence.population).toLocaleString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {agence.website ? (
+                        <a 
+                          href={agence.website} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
+                        >
+                          <Globe size={14} />
+                          Visiter
+                        </a>
+                      ) : (
+                        <span className="text-slate-400">-</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {filteredAgences.length === 0 && (
+            <div className="p-12 text-center text-slate-500">
+              Aucune agence trouvée pour &quot;{query}&quot;.
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-4">
+          <Pagination totalPages={totalPages} />
+        </div>
+      </main>
     </div>
   );
 }
